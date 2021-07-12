@@ -1,37 +1,32 @@
 package com.example.iphonesearchapi.adapter
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.TextView
-import com.example.iphonesearchapi.R
+import androidx.recyclerview.widget.RecyclerView
+import com.example.iphonesearchapi.databinding.PartialItunesRowBinding
 
-class ItunesAdapter(private var context: Context, private var itunesList: ArrayList<String>) :
-    BaseAdapter() {
+class ItunesAdapter( private var itunesList: ArrayList<String>) :
+    RecyclerView.Adapter<ItunesAdapter.ViewHolder>() {
 
-    override fun getCount(): Int {
-        return itunesList.size
+
+    class ViewHolder(view:PartialItunesRowBinding): RecyclerView.ViewHolder(view.root){
+
+        val textView: TextView = view.textViewtrackName
+
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = PartialItunesRowBinding
+            .inflate(LayoutInflater.from(parent.context),parent,false)
+        return ViewHolder(view)
     }
 
-    override fun getItem(p0: Int): Any {
-        return itunesList[p0]
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.textView.text = itunesList[position]
     }
 
-    override fun getItemId(p0: Int): Long {
-        return p0.toLong()
-    }
+    override fun getItemCount(): Int =  itunesList.size
 
-    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
 
-        val item = this.itunesList[p0]
-
-        var inflator = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        var itemView = inflator.inflate(R.layout.partial_itunes_row, null)
-        itemView.findViewById<TextView>(R.id.textView2).text = item
-        return itemView
-    }
 
 }
