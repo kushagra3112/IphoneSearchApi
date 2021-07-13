@@ -5,8 +5,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iphonesearchapi.databinding.PartialItunesRowBinding
+import com.example.iphonesearchapi.model.ITunesResponse
+import com.example.iphonesearchapi.model.Result
 
-class ItunesAdapter( private var itunesList: ArrayList<String>) :
+class ItunesAdapter(  var itunesList: MutableList<Result>) :
     RecyclerView.Adapter<ItunesAdapter.ViewHolder>() {
 
 
@@ -22,11 +24,16 @@ class ItunesAdapter( private var itunesList: ArrayList<String>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = itunesList[position]
+       var value=itunesList[position]
+        holder.textView.text = value.trackName
     }
 
     override fun getItemCount(): Int =  itunesList.size
-
+    fun resetDataSource(it: List<Result>) {
+        itunesList.clear()
+        itunesList.addAll(it)
+        notifyDataSetChanged()
+    }
 
 
 }
