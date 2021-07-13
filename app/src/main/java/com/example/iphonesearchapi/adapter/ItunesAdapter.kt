@@ -24,14 +24,13 @@ class ItunesAdapter(  var itunesList: MutableList<Result>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-       var value=itunesList[position]
+       val value=itunesList[position]
         holder.textView.text = value.trackName
     }
 
     override fun getItemCount(): Int =  itunesList.size
-    fun resetDataSource(it: List<Result>) {
-        itunesList.clear()
-        itunesList.addAll(it)
+    fun resetDataSource(it: Result) {
+        itunesList.add(it)
         notifyDataSetChanged()
     }
 

@@ -8,7 +8,7 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.iphonesearchapi.adapter.ItunesAdapter
 import com.example.iphonesearchapi.databinding.ActivityMainBinding
-import com.example.iphonesearchapi.model.Status
+import com.example.iphonesearchapi.model.ResultOf
 import com.example.iphonesearchapi.viewmodel.ItunesViewModel
 
 private lateinit var binding: ActivityMainBinding
@@ -37,15 +37,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.recyclerView.layoutManager = linearLayoutManager
         binding.recyclerView.adapter = itunesAdapter
-        viewModel.itunesLiveData.observe(this, Observer { weathersResource ->
-            when (weathersResource.status) {
-                Status.Success -> {
+        viewModel.itunes.observe(this,  { Resourse ->
+            when (Resourse) {
+                is ResultOf.Success -> {
                     showLoadingIndicator(false)
-                    itunesAdapter.resetDataSource(weathersResource.data ?: listOf())
                 }
-                Status.Loading -> {
+               is  ResultOf.Failure -> {
+                }
+                is ResultOf.Loading -> {
                     showLoadingIndicator(true)
-                    itunesAdapter.resetDataSource(weathersResource.data ?: listOf())
+                    itunesAdapter.resetDataSource(Resourse.value)
                 }
             }
         })
