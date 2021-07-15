@@ -2,46 +2,51 @@ package com.example.iphonesearchapi
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.iphonesearchapi.network.IphoneApiService
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.iphonesearchapi.adapter.ItunesAdapter
 import com.example.iphonesearchapi.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
-import java.util.ArrayList
+import com.example.iphonesearchapi.model.ResultOf
+import com.example.iphonesearchapi.utility.showLoadingIndicator
+import com.example.iphonesearchapi.viewmodel.ItunesViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private lateinit var binding: ActivityMainBinding
-const val BaseUrl = "https://itunes.apple.com/"
-var ituneslist = ArrayList<String>()
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: ItunesViewModel by viewModel()
+
+    private val itunesAdapter: ItunesAdapter by lazy {
+        ItunesAdapter(mutableListOf())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val linearLayoutManager = LinearLayoutManager(this)
-        setContentView( binding.root)
+        setContentView(binding.root)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BaseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(IphoneApiService::class.java)
-
-        lifecycleScope.launch {
-
-            val call = service.getResult("Imagine Dragons")
-
-            call.body()?.results?.forEach { result ->
-                ituneslist.add(result.trackName)
+        binding.recyclerView.adapter = itunesAdapter
+        viewModel.itunes.observe(this, { resourse ->
+            when (resourse) {
+                is ResultOf.Loading -> {
+                    showLoadingIndicator(true, binding.progressBar)
+                }
+                is ResultOf.Failure -> {
+                }
+                is ResultOf.Success -> {
+                    showLoadingIndicator(false, binding.progressBar)
+                    itunesAdapter.resetDataSource(resourse.value)
+                }
             }
-            val adapter = ItunesAdapter(ituneslist)
-            binding.recyclerView.layoutManager = linearLayoutManager
-            binding.recyclerView.adapter = adapter
-        }
+        })
+
+
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.triggerItunesapi()
+
+    }
 
 }
