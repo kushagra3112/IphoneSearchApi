@@ -2,56 +2,43 @@ package com.example.iphonesearchapi
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import androidx.lifecycle.Observer
-import androidx.activity.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.iphonesearchapi.adapter.ItunesAdapter
 import com.example.iphonesearchapi.databinding.ActivityMainBinding
 import com.example.iphonesearchapi.model.ResultOf
+import com.example.iphonesearchapi.utility.showLoadingIndicator
 import com.example.iphonesearchapi.viewmodel.ItunesViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private lateinit var binding: ActivityMainBinding
-const val BaseUrl = "https://itunes.apple.com/"
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: ItunesViewModel by viewModels()
-
-        fun showLoadingIndicator(showLoading: Boolean){
-           binding.progressBar.visibility = if (showLoading) View.VISIBLE else View.INVISIBLE
-        }
-
-
+    private val viewModel: ItunesViewModel by viewModel()
 
     private val itunesAdapter: ItunesAdapter by lazy {
-        ItunesAdapter( mutableListOf())
+        ItunesAdapter(mutableListOf())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val linearLayoutManager = LinearLayoutManager(this)
         setContentView(binding.root)
 
-        binding.recyclerView.layoutManager = linearLayoutManager
         binding.recyclerView.adapter = itunesAdapter
-        viewModel.itunes.observe(this,  { Resourse ->
-            when (Resourse) {
-                is ResultOf.Success -> {
-                    showLoadingIndicator(false)
-                }
-               is  ResultOf.Failure -> {
-                }
+        viewModel.itunes.observe(this, { resourse ->
+            when (resourse) {
                 is ResultOf.Loading -> {
-                    showLoadingIndicator(true)
-                    itunesAdapter.resetDataSource(Resourse.value)
+                    showLoadingIndicator(true, binding.progressBar)
+                }
+                is ResultOf.Failure -> {
+                }
+                is ResultOf.Success -> {
+                    showLoadingIndicator(false, binding.progressBar)
+                    itunesAdapter.resetDataSource(resourse.value)
                 }
             }
         })
-
-
 
 
     }
