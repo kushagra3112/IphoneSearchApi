@@ -18,26 +18,27 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.rules.TestRule
 import retrofit2.Response
 
 
 class ViewModelTest {
     private lateinit var apiService: IphoneApiService
-    private lateinit var result: List<Result>
     @get:Rule
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
 
     private val testDispatcher = TestCoroutineDispatcher()
-private lateinit var  a :Result
 
     private val testCoroutineScope = TestCoroutineScope(testDispatcher)
+    private lateinit var viewModel: ItunesViewModel
     @Before
     fun setup() {
-        a= mockk()
         apiService = mockk()
-        result=mockk()
         Dispatchers.setMain(testDispatcher)
+
+         viewModel = ItunesViewModel(apiService)
     }
 
     @ExperimentalCoroutinesApi
@@ -47,9 +48,10 @@ private lateinit var  a :Result
             coEvery { apiService.getResult("") } returns Response.success(
                 ITunesResponse(emptyList())
             )
-            val viewModel = ItunesViewModel(apiService)
-            ItunesViewModel(apiService).triggerItunesapi("")
-            viewModel.itunes.getOrAwaitValue()
+            viewModel.triggerItunesapi("")
+            val result=viewModel.itunes.getOrAwaitValue()
+        assertThat(result,`is`(ResultOf.Loading))
+
         }
     }
 
