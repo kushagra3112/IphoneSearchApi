@@ -15,9 +15,8 @@
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        android:name="com.example.iphonesearchapi.fragments.BlankFragment"
-        android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" >
+        android:name="com.example.iphonesearchapi.fragments.DetailsFragment"
+        android:label="fragment_detail">
         <argument
             android:name="songId"
             app:argType="integer" />

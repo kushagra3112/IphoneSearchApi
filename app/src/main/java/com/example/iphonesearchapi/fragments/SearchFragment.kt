@@ -29,8 +29,8 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchBinding.inflate(layoutInflater)
 
+        binding = FragmentSearchBinding.inflate(layoutInflater)
         binding.recyclerView.adapter = itunesAdapter
         viewModel.itunes.observe(viewLifecycleOwner, { resourse ->
             when (resourse) {
