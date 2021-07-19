@@ -17,14 +17,14 @@ class ItunesViewModel(private val serviceUtil: IphoneApiService) : ViewModel() {
     fun triggerItunesapi(searchText: String) {
 
         viewModelScope.launch {
-            _itunes.setValue (ResultOf.Loading)
+            _itunes.value = ResultOf.Loading
             val response = serviceUtil.getResult(searchText)
 
             if (response.isSuccessful) {
                 _itunes.setValue(ResultOf.Success(response.body()?.results!!))
 
             } else {
-                _itunes.postValue(ResultOf.Failure("Error"))
+                _itunes.setValue(ResultOf.Failure("Error"))
             }
 
 

@@ -2,19 +2,15 @@ package com.example.iphonesearchapi.viewmodel
 
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
 import com.example.iphonesearchapi.getOrAwaitValue
 import com.example.iphonesearchapi.model.ITunesResponse
-import com.example.iphonesearchapi.model.Result
 import com.example.iphonesearchapi.model.ResultOf
 import com.example.iphonesearchapi.network.IphoneApiService
 import io.mockk.*
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,20 +21,20 @@ import retrofit2.Response
 
 
 class ViewModelTest {
+
     private lateinit var apiService: IphoneApiService
     @get:Rule
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
-
     private val testDispatcher = TestCoroutineDispatcher()
-
     private val testCoroutineScope = TestCoroutineScope(testDispatcher)
     private lateinit var viewModel: ItunesViewModel
+
     @Before
     fun setup() {
         apiService = mockk()
         Dispatchers.setMain(testDispatcher)
 
-         viewModel = ItunesViewModel(apiService)
+        viewModel = ItunesViewModel(apiService)
     }
 
     @ExperimentalCoroutinesApi
@@ -49,14 +45,15 @@ class ViewModelTest {
                 ITunesResponse(emptyList())
             )
             viewModel.triggerItunesapi("")
-            val result=viewModel.itunes.getOrAwaitValue()
-        assertThat(result,`is`(ResultOf.Loading))
+            val result = viewModel.itunes.getOrAwaitValue()
+            assertThat(result, `is`(ResultOf.Loading))
 
         }
     }
 
     @After
-    fun tearDown() {testCoroutineScope.cleanupTestCoroutines()
+    fun tearDown() {
+        testCoroutineScope.cleanupTestCoroutines()
         Dispatchers.resetMain()
     }
 }
