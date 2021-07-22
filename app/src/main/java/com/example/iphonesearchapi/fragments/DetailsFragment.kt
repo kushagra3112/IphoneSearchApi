@@ -7,18 +7,35 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.example.iphonesearchapi.adapter.ItunesAdapter
+import com.example.iphonesearchapi.database.SongRepository
 import com.example.iphonesearchapi.databinding.FragmentDetailBinding
 import com.example.iphonesearchapi.model.ResultOf
+import com.example.iphonesearchapi.network.CustomApp
 import com.example.iphonesearchapi.utility.showLoadingIndicator
-import com.example.iphonesearchapi.viewmodel.detailViewModel
+import com.example.iphonesearchapi.viewmodel.DetailViewModel
+import com.example.iphonesearchapi.viewmodel.SongViewModel
+import com.example.iphonesearchapi.viewmodel.SongViewModelFactory
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowWith
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailsFragment : Fragment() {
 
-    private val viewModel: detailViewModel by viewModel()
+    private val viewModel: DetailViewModel by viewModel()
     private lateinit var binding : FragmentDetailBinding
-
+    private val songViewModel: SongViewModel by viewModels {
+        SongViewModelFactory(( activity?.application as CustomApp).repository)
+    }
+    var favlist:List<Long> = listOf()
+    val args: DetailsFragmentArgs by navArgs()
+    @InternalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,12 +43,35 @@ class DetailsFragment : Fragment() {
     ): View? {
 
         binding = FragmentDetailBinding.inflate(layoutInflater)
-        val args: DetailsFragmentArgs by navArgs()
-        val actionbar: ActionBar =  (activity as AppCompatActivity).supportActionBar!!
+        requireActivity().title =args.songName
 
-
-        actionbar.title =args.songName
         viewModel.triggerItunesapi(args.songId)
+        songViewModel.observe()
+        binding.toggleButton.setOnCheckedChangeListener{
+                _,isChecked->
+            if(binding.toggleButton.isPressed()) {
+                if(isChecked)
+                    songViewModel.insert(args.songId.toLong())
+                else
+                    songViewModel.delete(args.songId.toLong())
+            }
+
+        }
+        lifecycleScope.launchWhenStarted {
+            songViewModel.loginUserFlow.collect {
+                when(it){
+                    is ResultOf.Failure -> {
+                    }
+                    ResultOf.Loading -> {
+                    }
+                    is ResultOf.Success -> {
+                        val isFavorite = it.value.contains(args.songId.toLong())
+                        binding.toggleButton.isChecked = if(isFavorite) true else false
+
+                    }
+                }
+            }
+        }
         viewModel.songDetails.observe(viewLifecycleOwner, { resource ->
             when (resource) {
                 is ResultOf.Loading -> {

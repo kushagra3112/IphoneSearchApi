@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">IphoneSearchApi</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="not_fav">Not Fav</string>
+    <string name="fav">Fav</string>
 </resources>

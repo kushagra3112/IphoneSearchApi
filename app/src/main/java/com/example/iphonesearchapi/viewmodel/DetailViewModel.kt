@@ -9,14 +9,13 @@ import com.example.iphonesearchapi.model.ResultOf
 import com.example.iphonesearchapi.network.IphoneApiService
 import kotlinx.coroutines.launch
 
-class detailViewModel(private val serviceUtil: IphoneApiService): ViewModel() {
+class DetailViewModel(private val serviceUtil: IphoneApiService): ViewModel() {
     private val _songDetails = MutableLiveData<ResultOf<List<Result>>>()
     val songDetails: LiveData<ResultOf<List<Result>>> = _songDetails
 
     fun triggerItunesapi(trackId: Int) {
-
+        _songDetails.setValue(ResultOf.Loading)
         viewModelScope.launch {
-            _songDetails.value = ResultOf.Loading
             val response = serviceUtil.getSongDetail(trackId)
 
             if (response.isSuccessful) {
