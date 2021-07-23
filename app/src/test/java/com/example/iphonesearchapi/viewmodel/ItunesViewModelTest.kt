@@ -4,6 +4,7 @@ package com.example.iphonesearchapi.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.iphonesearchapi.getOrAwaitValue
 import com.example.iphonesearchapi.model.ITunesResponse
+import com.example.iphonesearchapi.model.Result
 import com.example.iphonesearchapi.model.ResultOf
 import com.example.iphonesearchapi.network.IphoneApiService
 import io.mockk.*
@@ -46,7 +47,10 @@ class ViewModelTest {
             )
             viewModel.triggerItunesapi("")
             val result = viewModel.itunes.getOrAwaitValue()
-            assertThat(result, `is`(ResultOf.Loading))
+            assertThat(result, `is`(ResultOf.Success(mutableListOf())
+            )
+            )
+
 
         }
     }

@@ -23,13 +23,13 @@ class detailViewModelTest {
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
     private val testDispatcher = TestCoroutineDispatcher()
     private val testCoroutineScope = TestCoroutineScope(testDispatcher)
-    private lateinit var viewModel: detailViewModel
+    private lateinit var viewModel: DetailViewModel
     private lateinit var apiService: IphoneApiService
     @Before
     fun setup(){
         apiService=mockk()
         Dispatchers.setMain(testDispatcher)
-        viewModel= detailViewModel(apiService)
+        viewModel= DetailViewModel(apiService)
     }
 
     @Test
@@ -38,7 +38,7 @@ class detailViewModelTest {
             coEvery {
                 apiService.getSongDetail(any())
             } returns Response.success(
-                ITunesResponse(emptyList())
+                ITunesResponse(mutableListOf())
             )
             viewModel.triggerItunesapi(1)
             val result=viewModel.songDetails.getOrAwaitValue ()
