@@ -11,4 +11,10 @@ interface IphoneApiService {
     suspend fun getResult(
         @Query("term") searchTerm: CharSequence
     ): Response<ITunesResponse>
+
+    @GET("lookup")
+    suspend fun getSongDetail(
+        @Query("id") trackId: Int
+    ):Response<ITunesResponse>
+
 }

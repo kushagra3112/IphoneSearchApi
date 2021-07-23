@@ -1,59 +1,55 @@
 package com.example.iphonesearchapi.viewmodel
 
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.iphonesearchapi.getOrAwaitValue
 import com.example.iphonesearchapi.model.ITunesResponse
 import com.example.iphonesearchapi.model.ResultOf
 import com.example.iphonesearchapi.network.IphoneApiService
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.rules.TestRule
 import retrofit2.Response
 
-
-class ViewModelTest {
-
-    private lateinit var apiService: IphoneApiService
+class detailViewModelTest {
     @get:Rule
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
     private val testDispatcher = TestCoroutineDispatcher()
     private val testCoroutineScope = TestCoroutineScope(testDispatcher)
-    private lateinit var viewModel: ItunesViewModel
-
+    private lateinit var viewModel: detailViewModel
+    private lateinit var apiService: IphoneApiService
     @Before
-    fun setup() {
-        apiService = mockk()
+    fun setup(){
+        apiService=mockk()
         Dispatchers.setMain(testDispatcher)
-
-        viewModel = ItunesViewModel(apiService)
+        viewModel= detailViewModel(apiService)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
-    fun suspendfunctest_retrofitResponse() {
+    fun `Detail ViewModel Test` (){
         runBlockingTest {
-            coEvery { apiService.getResult("") } returns Response.success(
+            coEvery {
+                apiService.getSongDetail(any())
+            } returns Response.success(
                 ITunesResponse(emptyList())
             )
-            viewModel.triggerItunesapi("")
-            val result = viewModel.itunes.getOrAwaitValue()
-            assertThat(result, `is`(ResultOf.Loading))
+            viewModel.triggerItunesapi(1)
+            val result=viewModel.songDetails.getOrAwaitValue ()
+            assertThat(result, `is`(ResultOf.Success(emptyList())) )
 
         }
     }
-
     @After
-    fun tearDown() {
+    fun tearDown(){
         testCoroutineScope.cleanupTestCoroutines()
         Dispatchers.resetMain()
     }
+
 }
