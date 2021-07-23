@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val ItunesModule = module {
 
     viewModel {
-        ItunesViewModel(get(),get())
+        ItunesViewModel(get())
     }
     viewModel{
         DetailViewModel(get())

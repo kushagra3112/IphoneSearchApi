@@ -42,7 +42,7 @@ class ViewModelTest {
     fun suspendfunctest_retrofitResponse() {
         runBlockingTest {
             coEvery { apiService.getResult("") } returns Response.success(
-                ITunesResponse(emptyList())
+                ITunesResponse(mutableListOf())
             )
             viewModel.triggerItunesapi("")
             val result = viewModel.itunes.getOrAwaitValue()

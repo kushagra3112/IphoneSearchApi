@@ -1,19 +1,13 @@
 package com.example.iphonesearchapi.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.*
-import com.example.iphonesearchapi.database.SongRepository
 
 import com.example.iphonesearchapi.model.Result
 import com.example.iphonesearchapi.model.ResultOf
-import com.example.iphonesearchapi.network.CustomApp
 import com.example.iphonesearchapi.network.IphoneApiService
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
-class ItunesViewModel(private val serviceUtil: IphoneApiService, application: Application) : AndroidViewModel(
-    application
-) {
+class ItunesViewModel(private val serviceUtil: IphoneApiService) : ViewModel() {
 
 
     private val _itunes = MutableLiveData<ResultOf<MutableList<Result>>>()
